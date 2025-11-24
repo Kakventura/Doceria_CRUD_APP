@@ -377,6 +377,7 @@ fun TelaCadastro(
         }
     }
 }
+
 // --- TELA PRINCIPAL (CRUD - READ/LIST & DELETE) ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -394,23 +395,61 @@ fun TelaPrincipal(onLogout: () -> Unit, repository: DoceriaRepository) {
         }
     }
 
+    // Carrega a cor roxa para a TopAppBar, se desejar estilizar
+    val corRoxo = colorResource(id = R.color.roxo)
+    val corBranco = colorResource(id = R.color.branco)
+    val corVerde = colorResource(id = R.color.verde_agua)
+
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Menu de Doces (${listaDoces.size} itens)") },
+                // MODIFICAÇÃO AQUI: Substituímos o Text por uma Row com Image e Text
+                title = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth() // Garante que a Row ocupe a largura total para centralização
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.cake__1_), // Sua imagem de cupcake
+                            contentDescription = "Logo Cupcake",
+                            modifier = Modifier.size(36.dp) // Ajuste o tamanho da imagem conforme necessário
+                        )
+                        Spacer(modifier = Modifier.width(8.dp)) // Espaço entre a imagem e o texto
+                        Text(
+                            " (${listaDoces.size} itens)",
+                            fontFamily = FontFamily.Cursive, // Mantém a fonte cursiva
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp // Ajuste o tamanho da fonte para ficar bom com a imagem
+                        )
+                    }
+                },
                 actions = {
                     IconButton(onClick = onLogout) {
-                        Text("Sair")
+                        Text(
+                            "Sair",
+                            fontFamily = FontFamily.Cursive, // Estilizando o botão "Sair"
+                            fontWeight = FontWeight.Bold,
+                            color = corRoxo,
+                            fontSize = 20.sp
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = corBranco // Fundo da TopAppBar branco
+                )
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                doceSelecionado = null
-                mostrandoDialogAdicionar = true
-            }) {
-                Icon(Icons.Default.Add, contentDescription = "Adicionar Doce")
+            FloatingActionButton(
+                onClick = {
+                    doceSelecionado = null
+                    mostrandoDialogAdicionar = true
+                },
+                containerColor = corRoxo // Cor do FAB
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Adicionar Doce", tint = corBranco)
             }
         }
     ) { paddingValues ->
@@ -421,7 +460,11 @@ fun TelaPrincipal(onLogout: () -> Unit, repository: DoceriaRepository) {
             if (listaDoces.isEmpty()) {
                 item {
                     Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
-                        Text("Nenhum doce cadastrado ainda.", style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            "Nenhum doce cadastrado ainda.",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontFamily = FontFamily.Cursive
+                        )
                     }
                 }
             }
@@ -466,9 +509,15 @@ fun formatarPreco(valor: Double): String {
 
 @Composable
 fun DoceCardItem(doce: Doce, onEditar: () -> Unit, onExcluir: () -> Unit) {
+    // Carrega cores para o CardItem se precisar de estilização consistente
+    val corRoxo = colorResource(id = R.color.roxo)
+    val corBranco = colorResource(id = R.color.branco)
+    val corVerde = colorResource(id = R.color.verde_agua)
+
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = corBranco) // Fundo do Card branco
     ) {
         Row(
             modifier = Modifier.padding(16.dp).fillMaxWidth(),
@@ -476,9 +525,27 @@ fun DoceCardItem(doce: Doce, onEditar: () -> Unit, onExcluir: () -> Unit) {
         ) {
             // 1. Informações do Doce
             Column(modifier = Modifier.weight(1f)) {
-                Text(doce.nome, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
-                Text("Tipo: ${doce.tipo}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text("Qtd: ${doce.quantidade}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    doce.nome,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    fontFamily = FontFamily.Cursive, // Estilizando texto do item
+                    color = corRoxo,
+                    fontSize = 20.sp
+                )
+                Text(
+                    "Tipo: ${doce.tipo}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontFamily = FontFamily.Cursive,
+                    fontSize = 15.sp
+                )
+                Text(
+                    "Qtd: ${doce.quantidade}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontFamily = FontFamily.Cursive,
+                    fontSize = 15.sp
+                )
             }
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -489,13 +556,14 @@ fun DoceCardItem(doce: Doce, onEditar: () -> Unit, onExcluir: () -> Unit) {
                 Text(
                     formatarPreco(doce.valor),
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
+                    color = corRoxo, // Usando a cor roxa para o preço
+                    fontFamily = FontFamily.Cursive // Estilizando preço
                 )
 
                 Row {
                     // Botão de Editar
                     IconButton(onClick = onEditar) {
-                        Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.secondary)
+                        Icon(Icons.Default.Edit, contentDescription = "Editar", tint = corVerde) // Ícone roxo
                     }
                     // Botão de Excluir
                     IconButton(onClick = onExcluir) {
@@ -526,24 +594,48 @@ fun DialogFormularioDoce(
     var erro by remember { mutableStateOf("") }
     var carregando by remember { mutableStateOf(false) }
 
+    // Carrega as cores para o Dialog
+    val corRoxo = colorResource(id = R.color.roxo)
+    val corBranco = colorResource(id = R.color.branco)
+
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(titulo) },
+        title = {
+            Text(
+                titulo,
+                fontFamily = FontFamily.Cursive,
+                fontWeight = FontWeight.Bold,
+                color = corRoxo,
+                fontSize = 35.sp
+            )
+        },
         text = {
             // Use o Modifier.imePadding() para garantir que o teclado não cubra os campos
             Column(modifier = Modifier.padding(top = 8.dp).imePadding()) {
 
                 // Campo Nome
                 OutlinedTextField(
-                    value = nome, onValueChange = { nome = it }, label = { Text("Nome do Doce") },
-                    modifier = Modifier.fillMaxWidth(), enabled = !carregando
+                    value = nome, onValueChange = { nome = it },
+                    label = { Text("Nome do Doce", fontFamily = FontFamily.Cursive, fontSize = 20.sp) },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !carregando,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = corRoxo,
+                        cursorColor = corRoxo
+                    )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Campo Tipo
                 OutlinedTextField(
-                    value = tipo, onValueChange = { tipo = it }, label = { Text("Tipo (Ex: Bolo, Torta)") },
-                    modifier = Modifier.fillMaxWidth(), enabled = !carregando
+                    value = tipo, onValueChange = { tipo = it },
+                    label = { Text("Tipo (Ex: Bolo, Torta)", fontFamily = FontFamily.Cursive, fontSize = 20.sp) },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !carregando,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = corRoxo,
+                        cursorColor = corRoxo
+                    )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -551,12 +643,17 @@ fun DialogFormularioDoce(
                 OutlinedTextField(
                     value = quantidadeText,
                     onValueChange = { quantidadeText = it.filter { it.isDigit() } },
-                    label = { Text("Quantidade") },
+                    label = { Text("Quantidade", fontFamily = FontFamily.Cursive, fontSize = 20.sp) },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next
                     ),
-                    modifier = Modifier.fillMaxWidth(), enabled = !carregando
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !carregando,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = corRoxo,
+                        cursorColor = corRoxo
+                    )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -564,16 +661,26 @@ fun DialogFormularioDoce(
                 OutlinedTextField(
                     value = valorText,
                     onValueChange = { valorText = it.replace(",", ".") },
-                    label = { Text("Valor (R$)") },
+                    label = { Text("Valor (R$)", fontFamily = FontFamily.Cursive, fontSize = 20.sp) },
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Decimal, // CORRIGIDO
+                        keyboardType = KeyboardType.Decimal,
                         imeAction = ImeAction.Done
                     ),
-                    modifier = Modifier.fillMaxWidth(), enabled = !carregando
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !carregando,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = corRoxo,
+                        cursorColor = corRoxo
+                    )
                 )
 
                 if (erro.isNotEmpty()) {
-                    Text(erro, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
+                    Text(
+                        erro,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 8.dp),
+                        fontFamily = FontFamily.Cursive
+                    )
                 }
             }
         },
@@ -612,16 +719,30 @@ fun DialogFormularioDoce(
                         )
                     }
                 },
-                enabled = nome.isNotEmpty() && tipo.isNotEmpty() && valorText.isNotEmpty() && quantidadeText.isNotEmpty() && !carregando
+                enabled = nome.isNotEmpty() && tipo.isNotEmpty() && valorText.isNotEmpty() && quantidadeText.isNotEmpty() && !carregando,
+                colors = ButtonDefaults.buttonColors(containerColor = corRoxo) // Botão com cor roxa
             ) {
                 if (carregando) {
-                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                    CircularProgressIndicator(modifier = Modifier.size(24.dp), color = corBranco)
                 } else {
-                    Text(if (doceParaEditar == null) "Salvar Doce" else "Atualizar")
+                    Text(
+                        if (doceParaEditar == null) "Salvar Doce" else "Atualizar",
+                        fontFamily = FontFamily.Cursive,
+                        color = corBranco
+                    )
                 }
             }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } }
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    "Cancelar",
+                    fontFamily = FontFamily.Cursive,
+                    color = corRoxo // Botão Cancelar com cor roxa
+                )
+            }
+        },
+        containerColor = corBranco // Fundo do AlertDialog branco
     )
 }
 
@@ -632,28 +753,54 @@ fun DialogConfirmacaoExclusao(
     repository: DoceriaRepository,
     onDismiss: () -> Unit
 ) {
+    // Carrega as cores para o Dialog
+    val corRoxo = colorResource(id = R.color.roxo)
+    val corBranco = colorResource(id = R.color.branco)
+
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Confirmar Exclusão") },
-        text = { Text("Tem certeza que deseja excluir '${doce.nome}'? Esta ação é irreversível.") },
+        title = {
+            Text(
+                "Confirmar Exclusão",
+                fontFamily = FontFamily.Cursive,
+                fontWeight = FontWeight.Bold,
+                color = corRoxo
+            )
+        },
+        text = {
+            Text(
+                "Tem certeza que deseja excluir '${doce.nome}'? Esta ação é irreversível.",
+                fontFamily = FontFamily.Cursive
+            )
+        },
         confirmButton = {
             Button(
                 onClick = {
                     repository.excluirDoce(
                         doceId = doce.id,
-                        onSuccess = onDismiss, // Fecha após sucesso
+                        onSuccess = onDismiss,
                         onFailure = { /* Em um app real, aqui mostraria um Toast */ }
                     )
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
-                Text("Excluir")
+                Text(
+                    "Excluir",
+                    fontFamily = FontFamily.Cursive,
+                    color = corBranco
+                )
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancelar")
+                Text(
+                    "Cancelar",
+                    fontFamily = FontFamily.Cursive,
+                    color = corRoxo
+                )
             }
-        }
+        },
+        containerColor = corBranco // Fundo do AlertDialog branco
     )
 }
+
