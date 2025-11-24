@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "1028030059974",
+    "firebase_url": "https://ativavaliativa-3c42f-default-rtdb.firebaseio.com",
+    "project_id": "ativavaliativa-3c42f",
+    "storage_bucket": "ativavaliativa-3c42f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1028030059974:android:1388b926bffad78a250ec7",
+        "android_client_info": {
+          "package_name": "com.example.ativavaliativa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlwVCT4WIY2k_zYeLSwMzu3fnbZaFKN7c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1028030059974:android:8a1cee75afd02718250ec7",
+        "android_client_info": {
+          "package_name": "com.example.doceria"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlwVCT4WIY2k_zYeLSwMzu3fnbZaFKN7c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
