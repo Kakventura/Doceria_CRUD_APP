@@ -1,8 +1,10 @@
 package com.example.doceria
 
+import android.R.attr.fontFamily
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,11 +24,11 @@ import androidx.compose.ui.unit.dp
 import com.example.doceria.ui.theme.DoceriaTheme
 import java.text.NumberFormat
 import java.util.Locale
-import androidx.compose.ui.res.colorResource // ESSENCIAL PARA LER AS CORES
-import com.example.doceria.R // Para acessar R.color.roxo, R.color.verde_agua, etc.
-
-// --- IMPORTS CRUCIAIS PARA OS CAMPOS DE TEXTO ---
-import androidx.compose.ui.text.input.* // Importa ImeAction, KeyboardType, PasswordVisualTransformation
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.*
+import androidx.compose.ui.unit.sp
 
 
 // Enum para controlar qual tela está visível (Navegação simples)
@@ -48,7 +50,8 @@ class MainActivity : ComponentActivity() {
             DoceriaTheme() {
                 // Estado para controlar qual tela mostrar
                 var telaAtual by remember {
-                    mutableStateOf(if (repository.isUsuarioLogado()) TelaAtual.PRINCIPAL else TelaAtual.LOGIN)
+                    // MODIFICADO: Força o início na tela de LOGIN
+                    mutableStateOf(TelaAtual.LOGIN)
                 }
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -107,18 +110,22 @@ fun TelaLogin(
         // ... (código do topo e campos de texto permanece o mesmo)
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-            Icon(
-                Icons.Filled.Favorite,
+            // Substituído o Icone de coração pela imagem 'logo'
+            Image(
+                painter = painterResource(id = R.drawable.candy_shop_bro__1_), // Altere 'R.drawable.logo' para o nome do seu arquivo de imagem
                 contentDescription = "Logo Doceria",
-                tint = corRoxo,
-                modifier = Modifier.size(64.dp)
+                modifier = Modifier.size(300.dp) // Ajuste o tamanho conforme necessário para sua logo
             )
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 "Bem-vindo à Doceria!",
                 style = MaterialTheme.typography.headlineMedium,
-                color = corRoxo
+                color = corRoxo,
+                fontSize = 40.sp,
+                fontFamily = FontFamily.Cursive,
+                fontWeight = FontWeight.Bold
+
             )
         }
 
@@ -127,7 +134,12 @@ fun TelaLogin(
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email") },
+                label = { Text("Email",
+                    modifier = Modifier.padding(),
+                    fontFamily = FontFamily.Cursive,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 17.sp)
+            },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = corRoxo,
@@ -140,7 +152,11 @@ fun TelaLogin(
             OutlinedTextField(
                 value = senha,
                 onValueChange = { senha = it },
-                label = { Text("Senha") },
+                label = { Text("Senha",
+                    modifier = Modifier.padding(),
+                    fontFamily = FontFamily.Cursive,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 17.sp) },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -151,7 +167,7 @@ fun TelaLogin(
             )
 
             if (erro.isNotEmpty()) {
-                Text(erro, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
+                Text(erro, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp), fontFamily = FontFamily.Cursive)
             }
         }
 
@@ -167,7 +183,12 @@ fun TelaLogin(
                 colors = ButtonDefaults.buttonColors(containerColor = corRoxo),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Entrar", modifier = Modifier.padding(vertical = 4.dp), color = corBranco)
+                Text("Entrar", modifier = Modifier.padding(vertical = 4.dp),
+                    color = corBranco,
+                    fontFamily = FontFamily.Cursive,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 25.sp
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -177,14 +198,15 @@ fun TelaLogin(
                 Text(
                     "Ainda não tem conta? Cadastre-se",
                     color = corAzulEscuro, // <--- AZUL ESCURO APLICADO
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.Cursive,
+                    fontSize = 20.sp
                 )
             }
         }
     }
 }
 
-// --- FUNÇÃO DE TELA DE CADASTRO ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TelaCadastro(
@@ -197,15 +219,41 @@ fun TelaCadastro(
     var erro by remember { mutableStateOf("") }
     var carregando by remember { mutableStateOf(false) }
 
+    // --- CARREGAMENTO MANUAL DAS CORES ---
+    val corRoxo = colorResource(id = R.color.roxo)
+    val corBranco = colorResource(id = R.color.branco)
+
+    // Configuração de cores para os OutlinedTextFields
+    val coresCampo = OutlinedTextFieldDefaults.colors(
+        focusedBorderColor = corRoxo,
+        cursorColor = corRoxo
+    )
+
+    // Removida a função auxiliar styleCadastroLabel incorreta.
+    // O estilo será aplicado diretamente ao Text:
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Novo Cadastro") },
+                title = {
+                    // Ajuste no Text e no Modifier do Text
+                    Text(
+                        "Novo Cadastro",
+                        fontFamily = FontFamily.Cursive,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp, // Tenta manter 18.sp, mas pode precisar de 16.sp
+                        // Adicionar o alinhamento vertical forçado ao título
+                        modifier = Modifier.fillMaxHeight().wrapContentHeight(Alignment.CenterVertically)
+                    )
+                },
                 navigationIcon = {
-                    IconButton(onClick = onVoltar) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Voltar")
+                    IconButton(onClick = onVoltar, enabled = !carregando) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Voltar", tint = corRoxo)
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = corBranco
+                )
             )
         }
     ) { paddingValues ->
@@ -213,37 +261,84 @@ fun TelaCadastro(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(32.dp),
+                .padding(horizontal = 32.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(32.dp))
-            Text("Crie sua conta na Doceria", style = MaterialTheme.typography.headlineSmall)
+
+            // --- Imagem ---
+            Spacer(modifier = Modifier.height(16.dp))
+            Image(
+                painter = painterResource(id = R.drawable.login_bro__1_), // Usando a imagem 'login'
+                contentDescription = "Imagem de Login/Cadastro",
+                modifier = Modifier.size(250.dp)
+            )
+
+            // --- Título estilizado ---
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "Crie sua conta na Doceria",
+                style = MaterialTheme.typography.headlineSmall,
+                color = corRoxo,
+                fontSize = 32.sp,
+                fontFamily = FontFamily.Cursive,
+                fontWeight = FontWeight.Bold
+            )
             Spacer(modifier = Modifier.height(32.dp))
 
+            // --- Campos de Texto ---
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email") },
-                enabled = !carregando
+                // CORREÇÃO: Aplicação correta dos estilos diretamente no composable Text do label
+                label = {
+                    Text(
+                        "Email",
+                        fontFamily = FontFamily.Cursive,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 17.sp
+                    )
+                },
+                enabled = !carregando,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                colors = coresCampo,
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
                 value = senha,
                 onValueChange = { senha = it },
-                label = { Text("Senha (mínimo 6 caracteres)") },
+                // CORREÇÃO: Aplicação correta dos estilos diretamente no composable Text do label
+                label = {
+                    Text(
+                        "Senha (mínimo 6 caracteres)",
+                        fontFamily = FontFamily.Cursive,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 17.sp
+                    )
+                },
                 visualTransformation = PasswordVisualTransformation(),
-                enabled = !carregando
+                enabled = !carregando,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                colors = coresCampo,
+                modifier = Modifier.fillMaxWidth()
             )
 
+            // --- Mensagem de Erro ---
             if (erro.isNotEmpty()) {
-                Text(erro, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
+                Text(
+                    erro,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 8.dp),
+                    fontFamily = FontFamily.Cursive
+                )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
+            // --- Botão ou Indicador de Carregamento ---
             if (carregando) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = corRoxo)
             } else {
                 Button(
                     onClick = {
@@ -254,15 +349,34 @@ fun TelaCadastro(
                             onFailure = { msgErro -> carregando = false; erro = msgErro }
                         )
                     },
-                    enabled = senha.length >= 6 && email.isNotEmpty()
+                    enabled = senha.length >= 6 && email.isNotEmpty(),
+                    colors = ButtonDefaults.buttonColors(containerColor = corRoxo),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Cadastrar")
+                    Text(
+                        "Cadastrar",
+                        color = corBranco,
+                        fontFamily = FontFamily.Cursive,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 25.sp
+                    )
                 }
+            }
+
+            // --- Botão Voltar para Login ---
+            Spacer(modifier = Modifier.height(16.dp))
+            TextButton(onClick = onVoltar, enabled = !carregando) {
+                Text(
+                    "Já tem conta? Fazer Login",
+                    color = corRoxo,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.Cursive,
+                    fontSize = 20.sp
+                )
             }
         }
     }
 }
-
 // --- TELA PRINCIPAL (CRUD - READ/LIST & DELETE) ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
