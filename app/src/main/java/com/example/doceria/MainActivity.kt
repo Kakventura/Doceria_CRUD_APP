@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import com.example.doceria.ui.theme.DoceriaTheme
 import java.text.NumberFormat
 import java.util.Locale
+import androidx.compose.ui.res.colorResource // ESSENCIAL PARA LER AS CORES
+import com.example.doceria.R // Para acessar R.color.roxo, R.color.verde_agua, etc.
 
 // --- IMPORTS CRUCIAIS PARA OS CAMPOS DE TEXTO ---
 import androidx.compose.ui.text.input.* // Importa ImeAction, KeyboardType, PasswordVisualTransformation
@@ -85,42 +88,98 @@ fun TelaLogin(
     var senha by remember { mutableStateOf("") }
     var erro by remember { mutableStateOf("") }
 
+    // --- CARREGAMENTO MANUAL DAS CORES ---
+    val corRoxo = colorResource(id = R.color.roxo)
+    val corVerdeAgua = colorResource(id = R.color.verde_agua)
+    val corBranco = colorResource(id = R.color.branco)
+    // NOVO: Carregamos a cor azul escuro
+    val corAzulEscuro = colorResource(id = R.color.azul_escuro)
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(32.dp),
-        verticalArrangement = Arrangement.Center,
+            .padding(horizontal = 32.dp, vertical = 64.dp)
+            .imePadding(),
+        verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Bem-vindo à Doceria!", style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.height(32.dp))
+        // ... (código do topo e campos de texto permanece o mesmo)
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-        OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("Email") })
-        Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(
-            value = senha,
-            onValueChange = { senha = it },
-            label = { Text("Senha") },
-            visualTransformation = PasswordVisualTransformation()
-        )
+            Icon(
+                Icons.Filled.Favorite,
+                contentDescription = "Logo Doceria",
+                tint = corRoxo,
+                modifier = Modifier.size(64.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
 
-        if (erro.isNotEmpty()) {
-            Text(erro, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
+            Text(
+                "Bem-vindo à Doceria!",
+                style = MaterialTheme.typography.headlineMedium,
+                color = corRoxo
+            )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
 
-        Button(onClick = {
-            erro = ""
-            repository.fazerLogin(email, senha, onLoginSucesso) { msgErro -> erro = msgErro }
-        }) {
-            Text("Entrar")
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = corRoxo,
+                    cursorColor = corRoxo
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = senha,
+                onValueChange = { senha = it },
+                label = { Text("Senha") },
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = corRoxo,
+                    cursorColor = corRoxo
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            if (erro.isNotEmpty()) {
+                Text(erro, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
+            }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        // --- 3. Base: Botões ---
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
 
-        TextButton(onClick = onIrParaCadastro) {
-            Text("Ainda não tem conta? Cadastre-se")
+            // Botão Principal (Entrar)
+            Button(
+                onClick = {
+                    erro = ""
+                    repository.fazerLogin(email, senha, onLoginSucesso) { msgErro -> erro = msgErro }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = corRoxo),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Entrar", modifier = Modifier.padding(vertical = 4.dp), color = corBranco)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Botão Secundário (Cadastre-se)
+            TextButton(onClick = onIrParaCadastro) {
+                Text(
+                    "Ainda não tem conta? Cadastre-se",
+                    color = corAzulEscuro, // <--- AZUL ESCURO APLICADO
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 }
